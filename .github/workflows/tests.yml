@@ -1,4 +1,4 @@
-name: Rotator tests
+name: Rotator verify
 
 on:
   push:
