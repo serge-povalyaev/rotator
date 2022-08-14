@@ -20,13 +20,17 @@ linters:
     - exhaustive
     - exportloopref
     - funlen
+    - gci
     - gocognit
     - goconst
     - gocritic
     - gocyclo
     - godot
     - gofmt
+    - gofumpt
     - goheader
+    - gomoddirectives
+    - gomodguard
     - goprintffuncname
     - gosec
     - gosimple
@@ -51,6 +55,7 @@ linters:
     - stylecheck
     - tagliatelle
     - thelper
+    - tparallel
     - typecheck
     - unconvert
     - unparam

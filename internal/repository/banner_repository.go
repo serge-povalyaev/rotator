@@ -2,7 +2,6 @@ package repository
 
 import (
 	"bannerRotator/internal/models"
-
 	"github.com/jmoiron/sqlx"
 )
 
