@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package api;
+option go_package = "./;server";
+
+service EventService {
+  rpc AddBanner(AddBannerRequest) returns (Error) {}
+  rpc RemoveBanner(RemoveBannerRequest) returns (Error) {}
+  rpc ClickBanner(ClickBannerRequest) returns (Error) {}
+  rpc GetBanner(GetBannerRequest) returns (GetBannerResponse) {}
+}
+
+message Error {
+  uint32 code = 1;
+  string message = 2;
+}
+
+message AddBannerRequest {
+  int64 bannerId = 1;
+  int64 slotId = 2;
+}
+
+message RemoveBannerRequest {
+  int64 bannerId = 1;
+  int64 slotId = 2;
+}
+
+message ClickBannerRequest {
+  int64 bannerId = 1;
+  int64 slotId = 2;
+  int64 socialGroupId = 3;
+}
+
+message GetBannerRequest {
+  int64 slotId = 1;
+  int64 socialGroupId = 2;
+}
+
+message GetBannerResponse {
+  int64 bannerId = 1;
+  Error error = 2;
+}
