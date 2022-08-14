@@ -9,8 +9,8 @@ const (
 
 type Event struct {
 	Type          int       `json:"type"`
-	SlotID        int       `json:"slot_id"`
-	BannerID      int       `json:"banner_id"`
-	SocialGroupID int       `json:"social_group_id"`
+	SlotID        int       `json:"slotId"`
+	BannerID      int       `json:"bannerId"`
+	SocialGroupID int       `json:"socialGroupId"`
 	DateTime      time.Time `json:"datetime"`
 }

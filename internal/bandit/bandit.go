@@ -35,7 +35,8 @@ func (b *Bandit) SelectElement() (Entity, error) {
 	var maxPriority float64
 	var selectedEntity Entity
 	for _, entity = range b.Entities {
-		entityPriority := float64(entity.GetGoalsCount())/float64(entity.GetTotalCount()) + math.Sqrt(2*math.Log(float64(totalCount))/float64(entity.GetTotalCount()))
+		partGoals := float64(entity.GetGoalsCount()) / float64(entity.GetTotalCount())
+		entityPriority := partGoals + math.Sqrt(2*math.Log(float64(totalCount))/float64(entity.GetTotalCount()))
 		if entityPriority >= maxPriority {
 			maxPriority = entityPriority
 			selectedEntity = entity

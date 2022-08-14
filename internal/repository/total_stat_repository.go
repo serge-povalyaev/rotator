@@ -1,12 +1,13 @@
 package repository
 
 import (
-	"bannerRotator/internal/models"
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"time"
+
+	"bannerRotator/internal/models"
+	"github.com/jmoiron/sqlx"
 )
 
 type TotalStatRepository struct {

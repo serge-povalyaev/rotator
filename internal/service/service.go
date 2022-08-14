@@ -1,13 +1,14 @@
 package service
 
 import (
+	"encoding/json"
+	"time"
+
 	"bannerRotator/internal/bandit"
 	"bannerRotator/internal/logger"
 	"bannerRotator/internal/models"
 	"bannerRotator/internal/rabbit"
 	"bannerRotator/internal/repository"
-	"encoding/json"
-	"time"
 )
 
 type RotatorService struct {
@@ -134,7 +135,7 @@ func (s *RotatorService) getBanner(slotID, socialGroupID int) (bandit.Entity, er
 
 	for _, banner := range banners {
 		_, ok := entitiesMap[banner.BannerID]
-		if ok == true {
+		if ok {
 			continue
 		}
 

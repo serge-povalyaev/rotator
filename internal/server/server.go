@@ -1,12 +1,13 @@
 package server
 
 import (
+	"context"
+	"net"
+
 	"bannerRotator/internal/config"
 	"bannerRotator/internal/logger"
 	"bannerRotator/internal/service"
-	"context"
 	"google.golang.org/grpc"
-	"net"
 )
 
 type Server struct {

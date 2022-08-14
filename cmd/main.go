@@ -1,19 +1,18 @@
 package main
 
 import (
+	"context"
+	"flag"
+	"os/signal"
+	"syscall"
+
 	"bannerRotator/internal/config"
 	"bannerRotator/internal/logger"
 	"bannerRotator/internal/rabbit"
 	"bannerRotator/internal/repository"
 	"bannerRotator/internal/server"
 	"bannerRotator/internal/service"
-	"context"
-	"flag"
 	"github.com/jmoiron/sqlx"
-	"os"
-	"os/signal"
-	"syscall"
-
 	_ "github.com/lib/pq"
 )
 
@@ -30,19 +29,20 @@ func main() {
 
 	ctx, cancel := signal.NotifyContext(context.Background(),
 		syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
-	defer cancel()
 
 	connection, err := sqlx.Connect("postgres", conf.DB.CreateDSN())
 	if err != nil {
+		cancel()
 		log.Fatal(err.Error())
 	}
 
 	producer := rabbit.NewProducer(log, conf.Rabbit)
 	err = producer.Connect()
 	if err != nil {
+		cancel()
 		log.Fatal(err.Error())
 	}
-	//producer := &rabbit.Producer{}
+
 	rotatorService := service.NewRotatorService(
 		log,
 		repository.NewBannerRepository(connection),
@@ -61,16 +61,19 @@ func main() {
 
 		grpcServer.Stop()
 		if err = connection.Close(); err != nil {
+			cancel()
 			log.Fatal(err.Error())
 		}
 		if err = producer.Disconnect(); err != nil {
+			cancel()
 			log.Fatal(err.Error())
 		}
 	}()
 
 	if err := grpcServer.Start(conf.GRPC); err != nil {
-		log.Error(err.Error())
 		cancel()
-		os.Exit(1)
+		log.Fatal(err.Error())
 	}
+
+	defer cancel()
 }

@@ -1,8 +1,10 @@
 package repository
 
 import (
-	"bannerRotator/internal/models"
 	"database/sql"
+	"errors"
+
+	"bannerRotator/internal/models"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -60,7 +62,7 @@ func (r *BannerToSlotRepository) existsBannerToSlot(bannerID, slotID int) (bool,
 	query := `SELECT * FROM banner_to_slot WHERE banner_id = $1 AND slot_id = $2 LIMIT 1`
 	err := r.conn.Get(&bannerToSlot, query, bannerID, slotID)
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	}
 
@@ -76,7 +78,7 @@ func (r *BannerToSlotRepository) GetBanners(slotID int) ([]models.BannerToSlot, 
 	query := `SELECT * FROM banner_to_slot WHERE slot_id = $1`
 	err := r.conn.Select(&bannerToSlot, query, slotID)
 
-	if err == sql.ErrNoRows || err == nil {
+	if errors.Is(err, sql.ErrNoRows) || err == nil {
 		return bannerToSlot, nil
 	}
 
