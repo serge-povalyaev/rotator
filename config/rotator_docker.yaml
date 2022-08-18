@@ -1,0 +1,21 @@
+grpc:
+  host: 0.0.0.0
+  port: 50051
+
+db:
+  host: postgres
+  port: 5432
+  user: postgres
+  pass: 1234567890
+  name: rotator
+
+logger:
+  level: debug
+  filePath: logs/rotator.log
+
+rabbit:
+  host: rabbit
+  port: 5672
+  user: guest
+  pass: guest
+  queue: banner

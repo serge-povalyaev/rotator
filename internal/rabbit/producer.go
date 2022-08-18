@@ -47,11 +47,7 @@ func (p *Producer) Connect() error {
 		nil,
 	)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func (p *Producer) Disconnect() error {
