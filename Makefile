@@ -16,7 +16,4 @@ run:
 stop:
 	docker-compose -f ./deployment/docker-compose.yaml -p rotator down
 
-generate:
-	go generate ./...
-
-.PHONY: build test install-lint-deps lint run stop generate
+.PHONY: build test install-lint lint run stop
