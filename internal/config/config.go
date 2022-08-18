@@ -32,8 +32,7 @@ func (c DBConfig) CreateDSN() string {
 }
 
 type LoggerConfig struct {
-	Level    string
-	FilePath string
+	Level string
 }
 
 type RabbitConfig struct {

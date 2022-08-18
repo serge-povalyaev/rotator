@@ -10,7 +10,7 @@ type Logger struct {
 	logger *logrus.Logger
 }
 
-func New(logLevel, filePath string) *Logger {
+func New(logLevel string) *Logger {
 	log := logrus.New()
 	log.Formatter = new(logrus.TextFormatter)
 	level, err := logrus.ParseLevel(logLevel)
@@ -20,14 +20,6 @@ func New(logLevel, filePath string) *Logger {
 	log.Level = level
 
 	log.Out = os.Stdout
-	//if filePath != "" {
-	//	file, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY, 0o666)
-	//	if err == nil {
-	//		log.Out = file
-	//	} else {
-	//		log.Info("Ошибка в работе с файлом")
-	//	}
-	//}
 
 	return &Logger{
 		logger: log,

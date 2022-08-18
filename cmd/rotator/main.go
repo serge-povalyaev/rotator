@@ -25,7 +25,7 @@ func init() {
 func main() {
 	flag.Parse()
 	conf := config.ReadConfig(configPath)
-	log := logger.New(conf.Logger.Level, conf.Logger.FilePath)
+	log := logger.New(conf.Logger.Level)
 
 	ctx, cancel := signal.NotifyContext(context.Background(),
 		syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
