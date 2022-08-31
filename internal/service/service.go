@@ -5,35 +5,73 @@ import (
 	"time"
 
 	"bannerRotator/internal/bandit"
-	"bannerRotator/internal/logger"
 	"bannerRotator/internal/models"
-	"bannerRotator/internal/rabbit"
 	"bannerRotator/internal/repository"
 )
 
+type bannerRepository interface {
+	Get(bannerID int) (*models.Banner, error)
+}
+
+type bannerToSlotRepository interface {
+	AddBannerToSlot(bannerID, slotID int) error
+	RemoveBannerToSlot(bannerID, slotID int) error
+	GetBanners(slotID int) ([]models.BannerToSlot, error)
+}
+
+type slotRepository interface {
+	Get(slotID int) (*models.Slot, error)
+}
+
+type socialGroupRepository interface {
+	Get(socialGroupID int) (*models.SocialGroup, error)
+}
+
+type statRepository interface {
+	Add(bannerID, slotID, socialGroupID, actionType int) error
+}
+
+type totalStatRepository interface {
+	GetStat(slotID, socialGroupID int) ([]models.Stat, error)
+	IncrementShows(bannerID, slotID, socialGroupID int) error
+	IncrementClicks(bannerID, slotID, socialGroupID int) error
+}
+
+type producer interface {
+	Publish(body []byte) error
+}
+
+type serviceLogger interface {
+	Error(message string)
+	Info(message string)
+	Warning(message string)
+	Debug(message string)
+	Fatal(message string)
+}
+
 type RotatorService struct {
-	logger                 *logger.Logger
-	bannerRepository       *repository.BannerRepository
-	bannerToSlotRepository *repository.BannerToSlotRepository
-	slotRepository         *repository.SlotRepository
-	socialGroupRepository  *repository.SocialGroupRepository
-	statRepository         *repository.StatRepository
-	totalStatRepository    *repository.TotalStatRepository
-	producer               *rabbit.Producer
+	serviceLogger
+	bannerRepository
+	bannerToSlotRepository
+	slotRepository
+	socialGroupRepository
+	statRepository
+	totalStatRepository
+	producer
 }
 
 func NewRotatorService(
-	logger *logger.Logger,
-	bannerRepository *repository.BannerRepository,
-	bannerToSlotRepository *repository.BannerToSlotRepository,
-	slotRepository *repository.SlotRepository,
-	socialGroupRepository *repository.SocialGroupRepository,
-	statRepository *repository.StatRepository,
-	totalStatRepository *repository.TotalStatRepository,
-	producer *rabbit.Producer,
+	serviceLogger serviceLogger,
+	bannerRepository bannerRepository,
+	bannerToSlotRepository bannerToSlotRepository,
+	slotRepository slotRepository,
+	socialGroupRepository socialGroupRepository,
+	statRepository statRepository,
+	totalStatRepository totalStatRepository,
+	producer producer,
 ) *RotatorService {
 	return &RotatorService{
-		logger:                 logger,
+		serviceLogger:          serviceLogger,
 		bannerRepository:       bannerRepository,
 		bannerToSlotRepository: bannerToSlotRepository,
 		slotRepository:         slotRepository,

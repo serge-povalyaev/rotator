@@ -5,22 +5,35 @@ import (
 	"net"
 
 	"bannerRotator/internal/config"
-	"bannerRotator/internal/logger"
-	"bannerRotator/internal/service"
 	"google.golang.org/grpc"
 )
 
-type Server struct {
-	rotatorService *service.RotatorService
-	grpc           *grpc.Server
-	logger         *logger.Logger
+type rotator interface {
+	AddBanner(bannerID, slotID int) error
+	RemoveBanner(bannerID, slotID int) error
+	ClickBanner(bannerID, slotID, socialGroupID int) error
+	Get(slotID, socialGroupID int) (*int, error)
 }
 
-func NewGRPCServer(rotatorService *service.RotatorService, logger *logger.Logger) *Server {
+type serverLogger interface {
+	Error(message string)
+	Info(message string)
+	Warning(message string)
+	Debug(message string)
+	Fatal(message string)
+}
+
+type Server struct {
+	rotator
+	serverLogger
+	grpc *grpc.Server
+}
+
+func NewGRPCServer(rotatorService rotator, serverLogger serverLogger) *Server {
 	grpcServer := &Server{
-		rotatorService: rotatorService,
-		grpc:           grpc.NewServer(),
-		logger:         logger,
+		rotator:      rotatorService,
+		grpc:         grpc.NewServer(),
+		serverLogger: serverLogger,
 	}
 	RegisterEventServiceServer(grpcServer.grpc, grpcServer)
 
@@ -45,7 +58,7 @@ func (s *Server) Stop() {
 }
 
 func (s Server) AddBanner(ctx context.Context, request *AddBannerRequest) (*Error, error) {
-	err := s.rotatorService.AddBanner(int(request.BannerId), int(request.SlotId))
+	err := s.rotator.AddBanner(int(request.BannerId), int(request.SlotId))
 	if err != nil {
 		return &Error{Code: 1, Message: err.Error()}, err
 	}
@@ -54,7 +67,7 @@ func (s Server) AddBanner(ctx context.Context, request *AddBannerRequest) (*Erro
 }
 
 func (s Server) RemoveBanner(ctx context.Context, request *RemoveBannerRequest) (*Error, error) {
-	err := s.rotatorService.RemoveBanner(int(request.BannerId), int(request.SlotId))
+	err := s.rotator.RemoveBanner(int(request.BannerId), int(request.SlotId))
 	if err != nil {
 		return &Error{Message: err.Error()}, err
 	}
@@ -63,7 +76,7 @@ func (s Server) RemoveBanner(ctx context.Context, request *RemoveBannerRequest) 
 }
 
 func (s Server) ClickBanner(ctx context.Context, request *ClickBannerRequest) (*Error, error) {
-	err := s.rotatorService.ClickBanner(int(request.BannerId), int(request.SlotId), int(request.SocialGroupId))
+	err := s.rotator.ClickBanner(int(request.BannerId), int(request.SlotId), int(request.SocialGroupId))
 	if err != nil {
 		return &Error{Message: err.Error()}, err
 	}
@@ -73,7 +86,7 @@ func (s Server) ClickBanner(ctx context.Context, request *ClickBannerRequest) (*
 
 func (s Server) GetBanner(ctx context.Context, request *GetBannerRequest) (*GetBannerResponse, error) {
 	response := &GetBannerResponse{}
-	bannerID, err := s.rotatorService.Get(int(request.SlotId), int(request.SocialGroupId))
+	bannerID, err := s.rotator.Get(int(request.SlotId), int(request.SocialGroupId))
 	if err != nil {
 		response.Error = &Error{Message: err.Error()}
 		return response, err
